@@ -1,0 +1,21 @@
+Description: Skip gzip js
+--- a/Gruntfile.js
++++ b/Gruntfile.js
+@@ -13,7 +13,7 @@
+ 	}
+ 
+ 	var fs = require( "fs" ),
+-		gzip = require( "gzip-js" ),
++		gzip = require( "zlib" ),
+ 		isTravis = process.env.TRAVIS,
+ 		travisBrowsers = process.env.BROWSERS && process.env.BROWSERS.split( "," );
+ 
+@@ -29,7 +29,7 @@
+ 			options: {
+ 				compress: {
+ 					gz: function( contents ) {
+-						return gzip.zip( contents, {} ).length;
++						return zlib.gzipSync(contents).length;
+ 					}
+ 				},
+ 				cache: "build/.sizecache.json"

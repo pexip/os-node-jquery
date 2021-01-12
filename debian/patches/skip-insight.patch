@@ -1,0 +1,11 @@
+Description: Skip insight
+--- a/build/tasks/build.js
++++ b/build/tasks/build.js
+@@ -9,7 +9,6 @@
+ module.exports = function( grunt ) {
+ 	var fs = require( "fs" ),
+ 		requirejs = require( "requirejs" ),
+-		Insight = require( "insight" ),
+ 		pkg = require( "../../package.json" ),
+ 		srcFolder = __dirname + "/../../src/",
+ 		rdefineEnd = /\}\s*?\);[^}\w]*$/,

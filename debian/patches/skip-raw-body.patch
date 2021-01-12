@@ -1,0 +1,16 @@
+Description: Skip raw body
+--- a/test/middleware-mockserver.js
++++ b/test/middleware-mockserver.js
+@@ -1,8 +1,10 @@
+ /* eslint-env node */
+ var url = require( "url" );
+ var fs = require( "fs" );
+-var getRawBody = require( "raw-body" );
+-
++/**
++ * Debian specific
++ var getRawBody = require( "raw-body" );
++ */
+ var cspLog = "";
+ /**
+  * Keep in sync with /test/mock.php
