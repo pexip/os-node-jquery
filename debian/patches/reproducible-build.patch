@@ -4,8 +4,8 @@ Last-Update: 2018-01-01
 
 --- a/src/wrapper.js
 +++ b/src/wrapper.js
-@@ -9,8 +9,6 @@
-  * Copyright JS Foundation and other contributors
+@@ -8,8 +8,6 @@
+  * Copyright OpenJS Foundation and other contributors
   * Released under the MIT license
   * https://jquery.org/license
 - *

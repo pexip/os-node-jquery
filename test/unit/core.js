@@ -36,23 +36,23 @@ QUnit.test( "jQuery()", function( assert ) {
 
 	// The $(html, props) signature can stealth-call any $.fn method, check for a
 	// few here but beware of modular builds where these methods may be excluded.
-	if ( jQuery.fn.click ) {
+	if ( includesModule( "deprecated" ) ) {
 		expected++;
 		attrObj[ "click" ] = function() { assert.ok( exec, "Click executed." ); };
 	}
-	if ( jQuery.fn.width ) {
+	if ( includesModule( "dimensions" ) ) {
 		expected++;
 		attrObj[ "width" ] = 10;
 	}
-	if ( jQuery.fn.offset ) {
+	if ( includesModule( "offset" ) ) {
 		expected++;
 		attrObj[ "offset" ] = { "top": 1, "left": 1 };
 	}
-	if ( jQuery.fn.css ) {
+	if ( includesModule( "css" ) ) {
 		expected += 2;
 		attrObj[ "css" ] = { "paddingLeft": 1, "paddingRight": 1 };
 	}
-	if ( jQuery.fn.attr ) {
+	if ( includesModule( "attributes" ) ) {
 		expected++;
 		attrObj.attr = { "desired": "very" };
 	}
@@ -92,7 +92,7 @@ QUnit.test( "jQuery()", function( assert ) {
 	} catch(e){
 		pass = false;
 	}
-	assert.ok( pass, "jQuery('&lt;tag&gt;') needs optional document parameter to ease cross-frame DOM wrangling, see #968" );*/
+	assert.ok( pass, "jQuery('&lt;tag&gt;') needs optional document parameter to ease cross-frame DOM wrangling, see trac-968" );*/
 
 	assert.equal( code.length, 1, "Correct number of elements generated for code" );
 	assert.equal( code.parent().length, 0, "Make sure that the generated HTML has no parent." );
@@ -115,20 +115,20 @@ QUnit.test( "jQuery()", function( assert ) {
 
 	elem = jQuery( "<div></div>", attrObj );
 
-	if ( jQuery.fn.width ) {
+	if ( includesModule( "dimensions" ) ) {
 		assert.equal( elem[ 0 ].style.width, "10px", "jQuery() quick setter width" );
 	}
 
-	if ( jQuery.fn.offset ) {
+	if ( includesModule( "offset" ) ) {
 		assert.equal( elem[ 0 ].style.top, "1px", "jQuery() quick setter offset" );
 	}
 
-	if ( jQuery.fn.css ) {
+	if ( includesModule( "css" ) ) {
 		assert.equal( elem[ 0 ].style.paddingLeft, "1px", "jQuery quick setter css" );
 		assert.equal( elem[ 0 ].style.paddingRight, "1px", "jQuery quick setter css" );
 	}
 
-	if ( jQuery.fn.attr ) {
+	if ( includesModule( "attributes" ) ) {
 		assert.equal( elem[ 0 ].getAttribute( "desired" ), "very", "jQuery quick setter attr" );
 	}
 
@@ -146,7 +146,7 @@ QUnit.test( "jQuery()", function( assert ) {
 	for ( i = 0; i < 3; ++i ) {
 		elem = jQuery( "<input type='text' value='TEST' />" );
 	}
-	assert.equal( elem[ 0 ].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
+	assert.equal( elem[ 0 ].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug trac-6655)" );
 
 	elem = jQuery( "<input type='hidden'>", {} );
 	assert.strictEqual( elem[ 0 ].ownerDocument, document,
@@ -182,7 +182,7 @@ QUnit.test( "globalEval with 'use strict'", function( assert ) {
 	assert.equal( window.strictEvalTest, 1, "Test variable declarations are global (strict mode)" );
 } );
 
-QUnit.test( "globalEval execution after script injection (#7862)", function( assert ) {
+QUnit.test( "globalEval execution after script injection (trac-7862)", function( assert ) {
 	assert.expect( 1 );
 
 	var now,
@@ -465,7 +465,7 @@ QUnit.test( "jQuery('html')", function( assert ) {
 	j = jQuery( "<span>hi</span> there <!-- mon ami -->" );
 	assert.ok( j.length >= 2, "Check node,textnode,comment creation (some browsers delete comments)" );
 
-	assert.ok( !jQuery( "<option>test</option>" )[ 0 ].selected, "Make sure that options are auto-selected #2050" );
+	assert.ok( !jQuery( "<option>test</option>" )[ 0 ].selected, "Make sure that options are auto-selected trac-2050" );
 
 	assert.ok( jQuery( "<div></div>" )[ 0 ], "Create a div with closing tag." );
 	assert.ok( jQuery( "<table></table>" )[ 0 ], "Create a table with closing tag." );
@@ -506,7 +506,7 @@ QUnit.test( "jQuery(element with non-alphanumeric name)", function( assert ) {
 	} );
 } );
 
-QUnit.test( "jQuery('massive html #7990')", function( assert ) {
+QUnit.test( "jQuery('massive html trac-7990')", function( assert ) {
 	assert.expect( 3 );
 
 	var i,
@@ -528,7 +528,7 @@ QUnit.test( "jQuery('html', context)", function( assert ) {
 
 	var $div = jQuery( "<div></div>" )[ 0 ],
 		$span = jQuery( "<span></span>", $div );
-	assert.equal( $span.length, 1, "verify a span created with a div context works, #1763" );
+	assert.equal( $span.length, 1, "verify a span created with a div context works, trac-1763" );
 } );
 
 QUnit.test( "jQuery(selector, xml).text(str) - loaded via xml document", function( assert ) {
@@ -536,7 +536,7 @@ QUnit.test( "jQuery(selector, xml).text(str) - loaded via xml document", functio
 
 	var xml = createDashboardXML(),
 
-	// tests for #1419 where ie was a problem
+	// tests for trac-1419 where ie was a problem
 		tab = jQuery( "tab", xml ).eq( 0 );
 	assert.equal( tab.text(), "blabla", "verify initial text correct" );
 	tab.text( "newtext" );
@@ -793,7 +793,7 @@ QUnit.test( "jQuery.map", function( assert ) {
 	result = jQuery.map( Array( 4 ), function( v, k ) {
 		return k % 2 ? k : [ k, k, k ];
 	} );
-	assert.equal( result.join( "" ), "00012223", "Array results flattened (#2616)" );
+	assert.equal( result.join( "" ), "00012223", "Array results flattened (trac-2616)" );
 
 	result = jQuery.map( [ [ [ 1, 2 ], 3 ], 4 ], function( v, k ) {
 		return v;
@@ -808,7 +808,7 @@ QUnit.test( "jQuery.map", function( assert ) {
 		result = jQuery.map( Array( 300000 ), function( v, k ) {
 			return k;
 		} );
-		assert.equal( result.length, 300000, "Able to map 300000 records without any problems (#4320)" );
+		assert.equal( result.length, 300000, "Able to map 300000 records without any problems (gh-4320)" );
 	} else {
 		assert.ok( "skip", "Array#flat doesn't supported on all browsers" );
 	}
@@ -845,14 +845,14 @@ QUnit.test( "jQuery.merge()", function( assert ) {
 		"First empty"
 	);
 
-	// Fixed at [5998], #3641
+	// Fixed at [5998], trac-3641
 	assert.deepEqual(
 		jQuery.merge( [ -2, -1 ], [ 0, 1, 2 ] ),
 		[ -2, -1, 0, 1, 2 ],
 		"Second array including a zero (falsy)"
 	);
 
-	// After fixing #5527
+	// After fixing trac-5527
 	assert.deepEqual(
 		jQuery.merge( [], [ null, undefined ] ),
 		[ null, undefined ],
@@ -996,7 +996,7 @@ QUnit.test( "jQuery.extend(Object, Object)", function( assert ) {
 
 	assert.ok( jQuery.extend( true, {}, nestedarray )[ "arr" ] !== arr, "Deep extend of object must clone child array" );
 
-	// #5991
+	// trac-5991
 	assert.ok( Array.isArray( jQuery.extend( true, { "arr": {} }, nestedarray )[ "arr" ] ), "Cloned array have to be an Array" );
 	assert.ok( jQuery.isPlainObject( jQuery.extend( true, { "arr": arr }, { "arr": {} } )[ "arr" ] ), "Cloned object have to be an plain object" );
 
@@ -1044,13 +1044,13 @@ QUnit.test( "jQuery.extend(Object, Object)", function( assert ) {
 	assert.deepEqual( target, { bar:5 }, "Check to make sure a recursive obj doesn't go never-ending loop by not copying it over" );
 
 	ret = jQuery.extend( true, { foo: [] }, { foo: [ 0 ] } ); // 1907
-	assert.equal( ret.foo.length, 1, "Check to make sure a value with coercion 'false' copies over when necessary to fix #1907" );
+	assert.equal( ret.foo.length, 1, "Check to make sure a value with coercion 'false' copies over when necessary to fix trac-1907" );
 
 	ret = jQuery.extend( true, { foo: "1,2,3" }, { foo: [ 1, 2, 3 ] } );
 	assert.ok( typeof ret.foo !== "string", "Check to make sure values equal with coercion (but not actually equal) overwrite correctly" );
 
 	ret = jQuery.extend( true, { foo:"bar" }, { foo:null } );
-	assert.ok( typeof ret.foo !== "undefined", "Make sure a null value doesn't crash with deep extend, for #1908" );
+	assert.ok( typeof ret.foo !== "undefined", "Make sure a null value doesn't crash with deep extend, for trac-1908" );
 
 	obj = { foo:null };
 	jQuery.extend( true, obj, { foo:"notnull" } );
@@ -1356,7 +1356,7 @@ QUnit.test( "jQuery.parseHTML", function( assert ) {
 	assert.equal( jQuery.parseHTML( "text" )[ 0 ].nodeType, 3, "Parsing text returns a text node" );
 	assert.equal( jQuery.parseHTML( "\t<div></div>" )[ 0 ].nodeValue, "\t", "Preserve leading whitespace" );
 
-	assert.equal( jQuery.parseHTML( " <div></div> " )[ 0 ].nodeType, 3, "Leading spaces are treated as text nodes (#11290)" );
+	assert.equal( jQuery.parseHTML( " <div></div> " )[ 0 ].nodeType, 3, "Leading spaces are treated as text nodes (trac-11290)" );
 
 	html = jQuery.parseHTML( "<div>test div</div>" );
 
@@ -1411,9 +1411,9 @@ QUnit.test( "jQuery.parseXML", function( assert ) {
 	}
 	try {
 		xml = jQuery.parseXML( "<p>Not a <<b>well-formed</b> xml string</p>" );
-		assert.ok( false, "invalid xml not detected" );
+		assert.ok( false, "invalid XML not detected" );
 	} catch ( e ) {
-		assert.strictEqual( e.message, "Invalid XML: <p>Not a <<b>well-formed</b> xml string</p>", "invalid xml detected" );
+		assert.ok( e.message.indexOf( "Invalid XML:" ) === 0, "invalid XML detected" );
 	}
 	try {
 		xml = jQuery.parseXML( "" );
@@ -1429,8 +1429,42 @@ QUnit.test( "jQuery.parseXML", function( assert ) {
 	}
 } );
 
+// Support: IE 11+, Edge 12 - 18 only
+// IE throws an error when parsing invalid XML instead of reporting the error
+// in a `parsererror` element, IE & Legacy Edge don't report errors in a parsererror
+// element; skip the test there.
+QUnit[
+	document.documentMode || /edge\//i.test( navigator.userAgent ) ?
+		"skip" :
+		"test"
+]( "jQuery.parseXML - error reporting", function( assert ) {
+	assert.expect( 2 );
+
+	var errorArg, lineMatch, line, columnMatch, column;
+
+	sinon.stub( jQuery, "error" );
+
+	jQuery.parseXML( "<p>Not a <<b>well-formed</b> xml string</p>" );
+	errorArg = jQuery.error.firstCall.args[ 0 ].toLowerCase();
+	console.log( "errorArg", errorArg );
+
+	lineMatch = errorArg.match( /line\s*(?:number)?\s*(\d+)/ );
+	line = lineMatch && lineMatch[ 1 ];
+	columnMatch = errorArg.match( /column\s*(\d+)/ );
+	column = columnMatch && columnMatch[ 1 ];
+
+	assert.strictEqual( line, "1", "reports error line" );
+
+	// Support: Firefox 96-97+
+	// Newer Firefox may report the column number smaller by 2 than it should.
+	// Accept both values until the issue is fixed.
+	// See https://bugzilla.mozilla.org/show_bug.cgi?id=1751796
+	assert.ok( [ "9", "11" ].indexOf( column ) > -1, "reports error column" );
+	// assert.strictEqual( column, "11", "reports error column" );
+} );
+
 testIframe(
-	"Conditional compilation compatibility (#13274)",
+	"Conditional compilation compatibility (trac-13274)",
 	"core/cc_on.html",
 	function( assert, jQuery, window, document, cc_on, errors ) {
 		assert.expect( 3 );
@@ -1445,7 +1479,7 @@ testIframe(
 // this test there is preferred to complicating the hard-to-test core/ready code further.
 if ( !/iphone os 7_/i.test( navigator.userAgent ) ) {
 	testIframe(
-		"document ready when jQuery loaded asynchronously (#13655)",
+		"document ready when jQuery loaded asynchronously (trac-13655)",
 		"core/dynamic_ready.html",
 		function( assert, jQuery, window, document, ready ) {
 			assert.expect( 1 );
@@ -1455,7 +1489,7 @@ if ( !/iphone os 7_/i.test( navigator.userAgent ) ) {
 }
 
 testIframe(
-	"Tolerating alias-masked DOM properties (#14074)",
+	"Tolerating alias-masked DOM properties (trac-14074)",
 	"core/aliased.html",
 	function( assert, jQuery, window, document, errors ) {
 		assert.expect( 1 );
@@ -1464,7 +1498,7 @@ testIframe(
 );
 
 testIframe(
-	"Don't call window.onready (#14802)",
+	"Don't call window.onready (trac-14802)",
 	"core/onready.html",
 	function( assert, jQuery, window, document, error ) {
 		assert.expect( 1 );
@@ -1502,7 +1536,7 @@ testIframe(
 	}
 );
 
-QUnit[ jQuery.Deferred ? "test" : "skip" ]( "jQuery.readyException (original)", function( assert ) {
+QUnit[ includesModule( "deferred" ) ? "test" : "skip" ]( "jQuery.readyException (original)", function( assert ) {
 	assert.expect( 1 );
 
 	var message;
@@ -1525,7 +1559,7 @@ QUnit[ jQuery.Deferred ? "test" : "skip" ]( "jQuery.readyException (original)", 
 	);
 } );
 
-QUnit[ jQuery.Deferred ? "test" : "skip" ]( "jQuery.readyException (custom)", function( assert ) {
+QUnit[ includesModule( "deferred" ) ? "test" : "skip" ]( "jQuery.readyException (custom)", function( assert ) {
 	assert.expect( 1 );
 
 	var done = assert.async();

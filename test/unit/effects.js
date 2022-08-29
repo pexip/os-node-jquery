@@ -1,7 +1,7 @@
 ( function() {
 
 // Can't test what ain't there
-if ( !jQuery.fx ) {
+if ( !includesModule( "effects" ) ) {
 	return;
 }
 
@@ -90,9 +90,6 @@ QUnit.test( "show()", function( assert ) {
 		assert.ok( pass, "Show with " + name + " does not call animate callback" );
 	} );
 
-	// Tolerate data from show()/hide()
-	assert.expectJqData( this, div, "olddisplay" );
-
 	jQuery(
 		"<div id='show-tests'>" +
 		"<div><p><a href='#'></a></p><code></code><pre></pre><span></span></div>" +
@@ -144,7 +141,7 @@ supportjQuery.each( hideOptions, function( type, setup ) {
 		// Note: inline elements are expected to be inline-block
 		// because we're showing width/height
 		// Can't animate width/height inline
-		// See #14344
+		// See trac-14344
 		var test = {
 			"div": "block",
 			"p": "block",
@@ -187,7 +184,7 @@ supportjQuery.each( hideOptions, function( type, setup ) {
 	} );
 } );
 
-// Supports #7397
+// Supports trac-7397
 supportjQuery.each( hideOptions, function( type, setup ) {
 	QUnit.test( "Persist correct display value - " + type + " hidden", function( assert ) {
 		assert.expect( 3 );
@@ -217,8 +214,6 @@ supportjQuery.each( hideOptions, function( type, setup ) {
 		} );
 
 		clock.tick( 300 );
-
-		assert.expectJqData( this, $span, "olddisplay" );
 	} );
 
 	QUnit[
@@ -252,8 +247,6 @@ supportjQuery.each( hideOptions, function( type, setup ) {
 		} );
 
 		clock.tick( 300 );
-
-		assert.expectJqData( this, $shadowChild, "olddisplay" );
 	} );
 } );
 
@@ -685,7 +678,7 @@ QUnit.test( "stop()", function( assert ) {
 	} );
 	this.clock.tick( 100 );
 	$two.fadeTo( 100, 0, function() {
-		assert.equal( $two.css( "opacity" ), "0", "Stop does not interfere with animations on other elements (#6641)" );
+		assert.equal( $two.css( "opacity" ), "0", "Stop does not interfere with animations on other elements (trac-6641)" );
 
 		// Reset styles
 		$one.add( $two ).css( "opacity", "" );
@@ -849,7 +842,7 @@ QUnit.test( "jQuery.fx.prototype.cur() - <1.8 Back Compat", function( assert ) {
 	assert.equal(
 		( new jQuery.fx( div, {}, "color" ) ).cur(),
 		jQuery.css( div, "color" ),
-		"Return the same value as jQuery.css for complex properties (bug #7912)"
+		"Return the same value as jQuery.css for complex properties (bug trac-7912)"
 	);
 
 	assert.strictEqual(
@@ -886,7 +879,7 @@ QUnit.test( "jQuery.fx.prototype.cur() - <1.8 Back Compat", function( assert ) {
 	assert.equal(
 		( new jQuery.fx( div, {}, "marginBottom" ) ).cur(),
 		-11000,
-		"support negative values < -10000 (bug #7193)"
+		"support negative values < -10000 (bug trac-7193)"
 	);
 
 	jQuery( div ).remove();
@@ -1138,7 +1131,7 @@ jQuery.makeTest = function( text ) {
 
 jQuery.makeTest.id = 1;
 
-QUnit.test( "jQuery.show('fast') doesn't clear radio buttons (bug #1095)", function( assert ) {
+QUnit.test( "jQuery.show('fast') doesn't clear radio buttons (bug trac-1095)", function( assert ) {
 	assert.expect( 4 );
 
 	var $checkedtest = jQuery( "#checkedtest" );
@@ -1171,9 +1164,6 @@ QUnit.test( "interrupt toggle", function( assert ) {
 
 			// Save original property value for comparison
 			jQuery.data( this, "startVal", jQuery( this ).css( prop ) );
-
-			// Expect olddisplay data from our .hide() call below
-			assert.expectJqData( env, this, "olddisplay" );
 		} );
 
 		// Interrupt a hiding toggle
@@ -1299,7 +1289,7 @@ QUnit.test( "animate with CSS shorthand properties", function( assert ) {
 		this.clock.tick( 400 );
 } );
 
-QUnit.test( "hide hidden elements, with animation (bug #7141)", function( assert ) {
+QUnit.test( "hide hidden elements, with animation (bug trac-7141)", function( assert ) {
 	assert.expect( 4 );
 
 	var div = jQuery( "<div id='bug7141' style='display:none'></div>" ).appendTo( "#qunit-fixture" );
@@ -1314,7 +1304,7 @@ QUnit.test( "hide hidden elements, with animation (bug #7141)", function( assert
 	assert.equal( div.css( "display" ), "block", "Element is visible after animations" );
 } );
 
-QUnit.test( "animate unit-less properties (#4966)", function( assert ) {
+QUnit.test( "animate unit-less properties (trac-4966)", function( assert ) {
 	assert.expect( 2 );
 
 	var div = jQuery( "<div style='z-index: 0; position: absolute;'></div>" ).appendTo( "#qunit-fixture" );
@@ -1325,7 +1315,7 @@ QUnit.test( "animate unit-less properties (#4966)", function( assert ) {
 	this.clock.tick( 400 );
 } );
 
-QUnit.test( "animate properties missing px w/ opacity as last (#9074)", function( assert ) {
+QUnit.test( "animate properties missing px w/ opacity as last (trac-9074)", function( assert ) {
 	assert.expect( 6 );
 
 	var ml, l,
@@ -1353,7 +1343,7 @@ QUnit.test( "animate properties missing px w/ opacity as last (#9074)", function
 	div.stop().remove();
 } );
 
-QUnit.test( "callbacks should fire in correct order (#9100)", function( assert ) {
+QUnit.test( "callbacks should fire in correct order (trac-9100)", function( assert ) {
 	assert.expect( 1 );
 
 	var a = 1,
@@ -1372,7 +1362,7 @@ QUnit.test( "callbacks should fire in correct order (#9100)", function( assert )
 	this.clock.tick( 20 );
 } );
 
-QUnit.test( "callbacks that throw exceptions will be removed (#5684)", function( assert ) {
+QUnit.test( "callbacks that throw exceptions will be removed (trac-5684)", function( assert ) {
 	assert.expect( 2 );
 
 	var foo = jQuery( "#foo" );
@@ -1425,7 +1415,7 @@ QUnit.test( "animate will scale margin properties individually", function( asser
 	} );
 } );
 
-QUnit.test( "Do not append px to 'fill-opacity' #9548", function( assert ) {
+QUnit.test( "Do not append px to 'fill-opacity' trac-9548", function( assert ) {
 	assert.expect( 1 );
 
 	var $div = jQuery( "<div>" ).appendTo( "#qunit-fixture" );
@@ -1436,7 +1426,7 @@ QUnit.test( "Do not append px to 'fill-opacity' #9548", function( assert ) {
 	} );
 } );
 
-QUnit.test( "line-height animates correctly (#13855)", function( assert ) {
+QUnit.test( "line-height animates correctly (trac-13855)", function( assert ) {
 	assert.expect( 12 );
 
 	var t0,
@@ -1572,7 +1562,7 @@ QUnit.test( "Animate callbacks have correct context", function( assert ) {
 	this.clock.tick( 10 );
 } );
 
-QUnit.test( "User supplied callback called after show when fx off (#8892)", function( assert ) {
+QUnit.test( "User supplied callback called after show when fx off (trac-8892)", function( assert ) {
 	assert.expect( 2 );
 
 	var foo = jQuery( "#foo" );
@@ -1623,8 +1613,6 @@ QUnit.test( "animate should set display for disconnected nodes", function( asser
 	assert.strictEqual( $divInline.show()[ 0 ].style.display, "inline",
 		"show() should not change display if it already set" );
 
-	assert.expectJqData( env, $divNone[ 0 ], "olddisplay" );
-
 	jQuery.each( showMethods, function( name, opt ) {
 		jQuery.fn[ name ].apply( jQuery( "<div></div>" ), opt.concat( [ function() {
 			assert.strictEqual( jQuery( this ).css( "display" ), nullParentDisplay,
@@ -1650,7 +1638,7 @@ QUnit.test( "animate should set display for disconnected nodes", function( asser
 	clock.tick( 400 );
 } );
 
-QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Animation callback should not show animated element as :animated (#7157)", function( assert ) {
+QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Animation callback should not show animated element as :animated (trac-7157)", function( assert ) {
 	assert.expect( 1 );
 
 	var foo = jQuery( "#foo" );
@@ -1663,7 +1651,7 @@ QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Animation callback should not s
 	this.clock.tick( 100 );
 } );
 
-QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Initial step callback should show element as :animated (#14623)", function( assert ) {
+QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Initial step callback should show element as :animated (trac-14623)", function( assert ) {
 	assert.expect( 1 );
 
 	var foo = jQuery( "#foo" );
@@ -1680,7 +1668,7 @@ QUnit[ jQuery.find.compile ? "test" : "skip" ]( "Initial step callback should sh
 	foo.stop();
 } );
 
-QUnit.test( "hide called on element within hidden parent should set display to none (#10045)", function( assert ) {
+QUnit.test( "hide called on element within hidden parent should set display to none (trac-10045)", function( assert ) {
 	assert.expect( 3 );
 
 	var hidden = jQuery( ".hidden" ),
@@ -1733,7 +1721,7 @@ QUnit.test( "hide, fadeOut and slideUp called on element width height and width 
 	this.clock.tick( 400 );
 } );
 
-QUnit.test( "hide should not leave hidden inline elements visible (#14848)", function( assert ) {
+QUnit.test( "hide should not leave hidden inline elements visible (trac-14848)", function( assert ) {
 	assert.expect( 2 );
 
 	var el = jQuery( "#simon1" );
@@ -1836,7 +1824,7 @@ QUnit.test( "multiple unqueued and promise", function( assert ) {
 	this.clock.tick( 1000 );
 } );
 
-QUnit.test( "animate does not change start value for non-px animation (#7109)", function( assert ) {
+QUnit.test( "animate does not change start value for non-px animation (trac-7109)", function( assert ) {
 	assert.expect( 1 );
 
 	var parent = jQuery( "<div><div></div></div>" ).css( { width: 284, height: 1 } ).appendTo( "#qunit-fixture" ),
@@ -1859,7 +1847,7 @@ QUnit.test( "animate does not change start value for non-px animation (#7109)", 
 	this.clock.tick( 10 );
 } );
 
-QUnit.test( "non-px animation handles non-numeric start (#11971)", function( assert ) {
+QUnit.test( "non-px animation handles non-numeric start (trac-11971)", function( assert ) {
 	assert.expect( 2 );
 
 	var foo = jQuery( "#foo" ),
@@ -1891,7 +1879,7 @@ QUnit.test( "non-px animation handles non-numeric start (#11971)", function( ass
 	this.clock.tick( 10 );
 } );
 
-QUnit.test( "Animation callbacks (#11797)", function( assert ) {
+QUnit.test( "Animation callbacks (trac-11797)", function( assert ) {
 	assert.expect( 15 );
 
 	var prog = 0,
@@ -1971,7 +1959,7 @@ QUnit.test( "Animation callbacks (#11797)", function( assert ) {
 	this.clock.tick( 10 );
 } );
 
-QUnit.test( "Animation callbacks in order (#2292)", function( assert ) {
+QUnit.test( "Animation callbacks in order (gh-2283)", function( assert ) {
 	assert.expect( 9 );
 
 	var done = assert.async(),
@@ -2011,7 +1999,7 @@ QUnit.test( "Animation callbacks in order (#2292)", function( assert ) {
 	this.clock.tick( dur + 10 );
 } );
 
-QUnit.test( "Animate properly sets overflow hidden when animating width/height (#12117)", function( assert ) {
+QUnit.test( "Animate properly sets overflow hidden when animating width/height (trac-12117)", function( assert ) {
 	assert.expect( 8 );
 
 	jQuery.each( [ "height", "width" ], function( _, prop ) {
@@ -2029,7 +2017,7 @@ QUnit.test( "Animate properly sets overflow hidden when animating width/height (
 	} );
 } );
 
-QUnit.test( "Each tick of the timer loop uses a fresh time (#12837)", function( assert ) {
+QUnit.test( "Each tick of the timer loop uses a fresh time (trac-12837)", function( assert ) {
 	var lastVal,
 		tmp = jQuery( {
 			test: 0
@@ -2054,7 +2042,7 @@ QUnit.test( "Each tick of the timer loop uses a fresh time (#12837)", function( 
 	tmp.stop();
 } );
 
-QUnit.test( "Animations with 0 duration don't ease (#12273)", function( assert ) {
+QUnit.test( "Animations with 0 duration don't ease (trac-12273)", function( assert ) {
 	assert.expect( 1 );
 
 	jQuery.easing.test = function() {
@@ -2079,7 +2067,7 @@ jQuery.map( [ "toggle", "slideToggle", "fadeToggle" ], function( method ) {
 	// this test would look a lot better if we were using something to override
 	// the default timers
 	var duration = 1500;
-	QUnit.test( "toggle state tests: " + method + " (#8685)", function( assert ) {
+	QUnit.test( "toggle state tests: " + method + " (trac-8685)", function( assert ) {
 		function secondToggle() {
 			var stopped = parseFloat( element.css( check ) );
 			tested = false;
@@ -2308,7 +2296,7 @@ QUnit.test( ".finish() calls finish of custom queue functions", function( assert
 	div.remove();
 } );
 
-QUnit.test( ".finish() is applied correctly when multiple elements were animated (#13937)", function( assert ) {
+QUnit.test( ".finish() is applied correctly when multiple elements were animated (trac-13937)", function( assert ) {
 	assert.expect( 3 );
 
 	var elems = jQuery( "<a>0</a><a>1</a><a>2</a>" );
@@ -2325,7 +2313,7 @@ QUnit.test( ".finish() is applied correctly when multiple elements were animated
 	this.clock.tick( 1500 );
 } );
 
-QUnit.test( "slideDown() after stop() (#13483)", function( assert ) {
+QUnit.test( "slideDown() after stop() (trac-13483)", function( assert ) {
 		assert.expect( 2 );
 
 		var ul = jQuery( "<ul style='height: 100px; display: block;'></ul>" )
@@ -2358,7 +2346,7 @@ QUnit.test( "slideDown() after stop() (#13483)", function( assert ) {
 		clock.tick( 10 );
 } );
 
-QUnit.test( "Respect display value on inline elements (#14824)", function( assert ) {
+QUnit.test( "Respect display value on inline elements (trac-14824)", function( assert ) {
 	assert.expect( 2 );
 
 	var clock = this.clock,

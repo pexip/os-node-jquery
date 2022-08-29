@@ -7,6 +7,10 @@ var cspLog = "";
 /**
  * Keep in sync with /test/mock.php
  */
+function cleanCallback( callback ) {
+	return callback.replace( /[^a-z0-9_]/gi, "" );
+}
+
 var mocks = {
 	contentType: function( req, resp ) {
 		resp.writeHead( 200, {
@@ -62,7 +66,7 @@ var mocks = {
 	script: function( req, resp ) {
 		if ( req.query.header === "ecma" ) {
 			resp.writeHead( 200, { "content-type": "application/ecmascript" } );
-		} else if ( req.query.header ) {
+		} else if ( "header" in req.query ) {
 			resp.writeHead( 200, { "content-type": "text/javascript" } );
 		} else {
 			resp.writeHead( 200, { "content-type": "text/html" } );
@@ -98,7 +102,7 @@ var mocks = {
 		} else if ( req.query.callback ) {
 			callback = Promise.resolve( req.query.callback );
 		} else if ( req.method === "GET" ) {
-			callback = Promise.resolve( req.url.match( /^.+\/([^\/?.]+)\?.+$/ )[ 1 ] );
+			callback = Promise.resolve( req.url.match( /^.+\/([^\/?]+)\?.+$/ )[ 1 ] );
 		} else {
 			callback = getBody( req ).then( function( body ) {
 				return body.trim().replace( "callback=", "" );
@@ -112,14 +116,14 @@ var mocks = {
 				{ data: { lang: "en", length: 25 } }
 			);
 		callback.then( function( cb ) {
-			resp.end( cb + "(" + json + ")" );
+			resp.end( cleanCallback( cb ) + "(" + json + ")" );
 		}, next );
 	},
 	xmlOverJsonp: function( req, resp ) {
 		var callback = req.query.callback;
 		var body = fs.readFileSync( __dirname + "/data/with_fries.xml" ).toString();
 		resp.writeHead( 200 );
-		resp.end( callback + "(" + JSON.stringify( body ) + ")\n" );
+		resp.end( cleanCallback( callback ) + "(" + JSON.stringify( body ) + ")\n" );
 	},
 	error: function( req, resp ) {
 		if ( req.query.json ) {
@@ -233,10 +237,11 @@ var mocks = {
 		if ( req.query.withScriptContentType ) {
 			resp.writeHead( 404, { "Content-Type": "application/javascript" } );
 		} else {
-			resp.writeHead( 404 );
+			resp.writeHead( 404, { "Content-Type": "text/html; charset=UTF-8" } );
 		}
 		if ( req.query.callback ) {
-			resp.end( req.query.callback + "( {\"status\": 404, \"msg\": \"Not Found\"} )" );
+			resp.end( cleanCallback( req.query.callback ) +
+				"( {\"status\": 404, \"msg\": \"Not Found\"} )" );
 		} else {
 			resp.end( "QUnit.assert.ok( false, \"Mock return erroneously executed\" );" );
 		}
@@ -277,8 +282,7 @@ function MockserverMiddlewareFactory() {
 	 * @param {Function} next Continue request handling
 	 */
 	return function( req, resp, next ) {
-		var method = req.method,
-			parsed = url.parse( req.url, /* parseQuery */ true ),
+		var parsed = url.parse( req.url, /* parseQuery */ true ),
 			path = parsed.pathname.replace( /^\/base\//, "" ),
 			query = parsed.query,
 			subReq = Object.assign( Object.create( req ), {

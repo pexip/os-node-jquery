@@ -1,0 +1,16 @@
+Description: drop ie8 support
+Author: Yadd <yadd@debian.org>
+Forwarded: no
+Last-Update: 2021-10-24
+
+--- a/Gruntfile.js
++++ b/Gruntfile.js
+@@ -318,7 +318,7 @@
+ 						// Support: Android 4.0 only
+ 						// UglifyJS 3 breaks Android 4.0 if this option is not enabled.
+ 						// This is in lieu of setting ie8 for all of mangle, compress, and output
+-						"ie8": true
++						//"ie8": true
+ 					},
+ 					banner: "/*! jQuery v<%= pkg.version %> | " +
+ 						"(c) OpenJS Foundation and other contributors | jquery.org/license */",

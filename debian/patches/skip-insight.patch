@@ -1,10 +1,14 @@
 Description: Skip insight
+Forwarded: not-needed
+Reviewed-By: Yadd <yadd@debian.org>
+Last-Update: 2022-08-29
+
 --- a/build/tasks/build.js
 +++ b/build/tasks/build.js
-@@ -9,7 +9,6 @@
- module.exports = function( grunt ) {
+@@ -10,7 +10,6 @@
  	var fs = require( "fs" ),
  		requirejs = require( "requirejs" ),
+ 		slimBuildFlags = require( "./lib/slim-build-flags" ),
 -		Insight = require( "insight" ),
  		pkg = require( "../../package.json" ),
  		srcFolder = __dirname + "/../../src/",

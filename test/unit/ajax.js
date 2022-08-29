@@ -13,7 +13,7 @@ QUnit.module( "ajax", {
 		assert.ok( !isLocal, "Unit tests are not ran from file:// (especially in Chrome. If you must test from file:// with Chrome, run it with the --allow-file-access-from-files flag!)" );
 	} );
 
-	if ( !jQuery.ajax || ( isLocal && !hasPHP ) ) {
+	if ( !includesModule( "ajax" ) || ( isLocal && !hasPHP ) ) {
 		return;
 	}
 
@@ -114,7 +114,7 @@ QUnit.module( "ajax", {
 		return {
 			create: function( options ) {
 				options.crossDomain = true;
-				return jQuery.ajax( url( "mock.php?action=script" ), options );
+				return jQuery.ajax( url( "mock.php?action=script&header" ), options );
 			},
 			success: function() {
 				assert.ok( true, "success" );
@@ -646,7 +646,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	ajaxTest( "#15118 - jQuery.ajax() - function without jQuery.event", 1, function( assert ) {
+	ajaxTest( "trac-15118 - jQuery.ajax() - function without jQuery.event", 1, function( assert ) {
 		var holder;
 		return {
 			url: url( "mock.php?action=json" ),
@@ -662,7 +662,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	ajaxTest( "#15160 - jQuery.ajax() - request manually aborted in ajaxSend", 3, function( assert ) {
+	ajaxTest( "trac-15160 - jQuery.ajax() - request manually aborted in ajaxSend", 3, function( assert ) {
 		return {
 			setup: function() {
 				jQuery( document ).on( "ajaxSend", function( e, jqXHR ) {
@@ -833,6 +833,19 @@ QUnit.module( "ajax", {
 				jQuery( "#ap" ).html( data );
 				assert.strictEqual( window[ "testFoo" ], "foo", "Check if script was evaluated for datatype html" );
 				assert.strictEqual( window[ "testBar" ], "bar", "Check if script src was evaluated for datatype html" );
+			}
+		};
+	} );
+
+	ajaxTest( "jQuery.ajax() - do execute scripts if JSONP from unsuccessful responses", 1, function( assert ) {
+		var testMsg = "Unsuccessful JSONP requests should have a JSON body";
+		return {
+			dataType: "jsonp",
+			url: url( "mock.php?action=errorWithScript" ),
+			// error is the significant assertion
+			error: function( xhr ) {
+				var expected = { "status": 404, "msg": "Not Found" };
+				assert.deepEqual( xhr.responseJSON, expected, testMsg );
 			}
 		};
 	} );
@@ -1544,12 +1557,25 @@ QUnit.module( "ajax", {
 		function( label, cache ) {
 			jQuery.each(
 				{
-					"If-Modified-Since": "mock.php?action=ims",
-					"Etag": "mock.php?action=etag"
+					"If-Modified-Since": {
+						url: "mock.php?action=ims",
+						qunitMethod: "test"
+					},
+					"Etag": {
+						url: "mock.php?action=etag",
+
+						// Support: TestSwarm
+						// TestSwarm is now proxied via Cloudflare which cuts out
+						// headers relevant for ETag tests, failing them. We're still
+						// running those tests in Karma on Chrome & Firefox (including
+						// Firefox ESR).
+						qunitMethod: QUnit.isSwarm ? "skip" : "test"
+					}
 				},
-				function( type, url ) {
-					url = baseURL + url + "&ts=" + ifModifiedNow++;
-					QUnit.test( "jQuery.ajax() - " + type + " support" + label, function( assert ) {
+				function( type, data ) {
+					var url = baseURL + data.url + "&ts=" + ifModifiedNow++;
+					QUnit[ data.qunitMethod ]( "jQuery.ajax() - " + type +
+							" support" + label, function( assert ) {
 						assert.expect( 4 );
 						var done = assert.async();
 						jQuery.ajax( {
@@ -1614,7 +1640,8 @@ QUnit.module( "ajax", {
 		var done = assert.async();
 		jQuery.ajax( url( "mock.php?action=status&code=200&text=Hello" ) ).done( function( _, statusText, jqXHR ) {
 			assert.strictEqual( statusText, "success", "callback status text ok for success" );
-			assert.ok( jqXHR.statusText === "Hello" || jqXHR.statusText === "OK", "jqXHR status text ok for success (" + jqXHR.statusText + ")" );
+			assert.ok( [ "Hello", "OK", "success" ].indexOf( jqXHR.statusText ) > -1,
+				"jqXHR status text ok for success (" + jqXHR.statusText + ")" );
 			jQuery.ajax( url( "mock.php?action=status&code=404&text=World" ) ).fail( function( jqXHR, statusText ) {
 				assert.strictEqual( statusText, "error", "callback status text ok for error" );
 				done();
@@ -1791,7 +1818,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	ajaxTest( "#2688 - jQuery.ajax() - beforeSend, cancel request", 2, function( assert ) {
+	ajaxTest( "trac-2688 - jQuery.ajax() - beforeSend, cancel request", 2, function( assert ) {
 		return {
 			create: function() {
 				return jQuery.ajax( {
@@ -1817,7 +1844,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	ajaxTest( "#2806 - jQuery.ajax() - data option - evaluate function values", 1, function( assert ) {
+	ajaxTest( "trac-2806 - jQuery.ajax() - data option - evaluate function values", 1, function( assert ) {
 		return {
 			url: baseURL + "mock.php?action=echoQuery",
 			data: {
@@ -1831,7 +1858,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	QUnit.test( "#7531 - jQuery.ajax() - Location object as url", function( assert ) {
+	QUnit.test( "trac-7531 - jQuery.ajax() - Location object as url", function( assert ) {
 		assert.expect( 1 );
 
 		var xhr,
@@ -1849,7 +1876,7 @@ QUnit.module( "ajax", {
 	} );
 
 	jQuery.each( [ " - Same Domain", " - Cross Domain" ], function( crossDomain, label ) {
-		ajaxTest( "#7578 - jQuery.ajax() - JSONP - default for cache option" + label, 1, function( assert ) {
+		ajaxTest( "trac-7578 - jQuery.ajax() - JSONP - default for cache option" + label, 1, function( assert ) {
 			return {
 				url: baseURL + "mock.php?action=jsonp",
 				dataType: "jsonp",
@@ -1863,7 +1890,7 @@ QUnit.module( "ajax", {
 		} );
 	} );
 
-	ajaxTest( "#8107 - jQuery.ajax() - multiple method signatures introduced in 1.5", 4, function( assert ) {
+	ajaxTest( "trac-8107 - jQuery.ajax() - multiple method signatures introduced in 1.5", 4, function( assert ) {
 		return [
 			{
 				create: function() {
@@ -1902,7 +1929,7 @@ QUnit.module( "ajax", {
 	} );
 
 	jQuery.each( [ " - Same Domain", " - Cross Domain" ], function( crossDomain, label ) {
-		ajaxTest( "#8205 - jQuery.ajax() - JSONP - re-use callbacks name" + label, 4, function( assert ) {
+		ajaxTest( "trac-8205 - jQuery.ajax() - JSONP - re-use callbacks name" + label, 4, function( assert ) {
 			return {
 				url: baseURL + "mock.php?action=jsonp",
 				dataType: "jsonp",
@@ -1940,7 +1967,7 @@ QUnit.module( "ajax", {
 		} );
 	} );
 
-	QUnit.test( "#9887 - jQuery.ajax() - Context with circular references (#9887)", function( assert ) {
+	QUnit.test( "trac-9887 - jQuery.ajax() - Context with circular references (trac-9887)", function( assert ) {
 		assert.expect( 2 );
 
 		var success = false,
@@ -1974,7 +2001,7 @@ QUnit.module( "ajax", {
 			};
 		}
 
-		ajaxTest( "#10093 - jQuery.ajax() - falsy url " + title, 4, function( assert ) {
+		ajaxTest( "trac-10093 - jQuery.ajax() - falsy url " + title, 4, function( assert ) {
 			return [
 				request( assert, "", "empty string" ),
 				request( assert, false ),
@@ -1984,7 +2011,7 @@ QUnit.module( "ajax", {
 		} );
 	} );
 
-	ajaxTest( "#11151 - jQuery.ajax() - parse error body", 2, function( assert ) {
+	ajaxTest( "trac-11151 - jQuery.ajax() - parse error body", 2, function( assert ) {
 		return {
 			url: url( "mock.php?action=error&json=1" ),
 			dataFilter: function( string ) {
@@ -1998,7 +2025,7 @@ QUnit.module( "ajax", {
 		};
 	} );
 
-	ajaxTest( "#11426 - jQuery.ajax() - loading binary data shouldn't throw an exception in IE", 1, function( assert ) {
+	ajaxTest( "trac-11426 - jQuery.ajax() - loading binary data shouldn't throw an exception in IE", 1, function( assert ) {
 		return {
 			url: url( "1x1.jpg" ),
 			success: function( data ) {
@@ -2031,7 +2058,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	} );
 }
 
-	QUnit.test( "#11743 - jQuery.ajax() - script, throws exception", function( assert ) {
+	QUnit.test( "trac-11743 - jQuery.ajax() - script, throws exception", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
 		var onerror = window.onerror;
@@ -2066,7 +2093,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		}
 
 		ajaxTest(
-			"#12004 - jQuery.ajax() - method is an alias of type - " +
+			"trac-12004 - jQuery.ajax() - method is an alias of type - " +
 			globalOption + " set globally", 3,
 			function( assert ) {
 				return {
@@ -2085,7 +2112,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		);
 	} );
 
-	ajaxTest( "#13276 - jQuery.ajax() - compatibility between XML documents from ajax requests and parsed string", 1, function( assert ) {
+	ajaxTest( "trac-13276 - jQuery.ajax() - compatibility between XML documents from ajax requests and parsed string", 1, function( assert ) {
 		return {
 			url: baseURL + "dashboard.xml",
 			dataType: "xml",
@@ -2103,7 +2130,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		};
 	} );
 
-	ajaxTest( "#13292 - jQuery.ajax() - converter is bypassed for 204 requests", 3, function( assert ) {
+	ajaxTest( "trac-13292 - jQuery.ajax() - converter is bypassed for 204 requests", 3, function( assert ) {
 		return {
 			url: baseURL + "mock.php?action=status&code=204&text=No+Content",
 			dataType: "testing",
@@ -2125,7 +2152,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		};
 	} );
 
-	ajaxTest( "#13388 - jQuery.ajax() - responseXML", 3, function( assert ) {
+	ajaxTest( "trac-13388 - jQuery.ajax() - responseXML", 3, function( assert ) {
 		return {
 			url: url( "with_fries.xml" ),
 			dataType: "xml",
@@ -2137,7 +2164,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		};
 	} );
 
-	ajaxTest( "#13922 - jQuery.ajax() - converter is bypassed for HEAD requests", 3, function( assert ) {
+	ajaxTest( "trac-13922 - jQuery.ajax() - converter is bypassed for HEAD requests", 3, function( assert ) {
 		return {
 			url: baseURL + "mock.php?action=json",
 			method: "HEAD",
@@ -2165,9 +2192,12 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	// Chrome 78 dropped support for synchronous XHR requests inside of
 	// beforeunload, unload, pagehide, and visibilitychange event handlers.
 	// See https://bugs.chromium.org/p/chromium/issues/detail?id=952452
-	if ( !/chrome/i.test( navigator.userAgent ) ) {
+	// Safari 13 did similar changes. The below check will catch them both.
+	// Edge Legacy fakes Chrome which fakes Safari in their user agents so we need
+	// to exclude Edge specifically here so that the test continues to run there.
+	if ( !/safari/i.test( navigator.userAgent ) || /edge\//i.test( navigator.userAgent ) ) {
 		testIframe(
-			"#14379 - jQuery.ajax() on unload",
+			"trac-14379 - jQuery.ajax() on unload",
 			"ajax/onunload.html",
 			function( assert, jQuery, window, document, status ) {
 				assert.expect( 1 );
@@ -2176,7 +2206,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		);
 	}
 
-	ajaxTest( "#14683 - jQuery.ajax() - Exceptions thrown synchronously by xhr.send should be caught", 4, function( assert ) {
+	ajaxTest( "trac-14683 - jQuery.ajax() - Exceptions thrown synchronously by xhr.send should be caught", 4, function( assert ) {
 		return [ {
 			url: baseURL + "mock.php?action=echoData",
 			method: "POST",
@@ -2399,7 +2429,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 
 //----------- jQuery.domManip()
 
-	QUnit.test( "#11264 - jQuery.domManip() - no side effect because of ajaxSetup or global events", function( assert ) {
+	QUnit.test( "trac-11264 - jQuery.domManip() - no side effect because of ajaxSetup or global events", function( assert ) {
 		assert.expect( 1 );
 
 		jQuery.ajaxSetup( {
@@ -2416,7 +2446,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	} );
 
 	QUnit.test(
-		"jQuery#load() - always use GET method even if it overrided through ajaxSetup (#11264)",
+		"jQuery#load() - always use GET method even if it overrided through ajaxSetup (trac-11264)",
 		function( assert ) {
 			assert.expect( 1 );
 			var done = assert.async();
@@ -2453,7 +2483,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 	);
 
 	QUnit.test(
-		"#11402 - jQuery.domManip() - script in comments are properly evaluated",
+		"trac-11402 - jQuery.domManip() - script in comments are properly evaluated",
 		function( assert ) {
 			assert.expect( 2 );
 			jQuery( "#qunit-fixture" ).load( baseURL + "cleanScript.html", assert.async() );
@@ -2476,7 +2506,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		} );
 	} );
 
-	QUnit.test( "#8277 - jQuery.get( String, Function ) - data in ajaxSettings", function( assert ) {
+	QUnit.test( "trac-8277 - jQuery.get( String, Function ) - data in ajaxSettings", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
 		jQuery.ajaxSetup( {
@@ -2567,7 +2597,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		jQuery.getScript( url( "mock.php?action=testbar" ) ).done( assert.async() );
 	} );
 
-	QUnit.test( "#8082 - jQuery.getScript( String, Function ) - source as responseText", function( assert ) {
+	QUnit.test( "trac-8082 - jQuery.getScript( String, Function ) - source as responseText", function( assert ) {
 		assert.expect( 2 );
 		var done = assert.async();
 
@@ -2654,7 +2684,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		} );
 	} );
 
-	// Selector should be trimmed to avoid leading spaces (#14773)
+	// Selector should be trimmed to avoid leading spaces (trac-14773)
 	QUnit.test( "jQuery.fn.load( URL_SELECTOR with spaces )", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
@@ -2664,9 +2694,9 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		} );
 	} );
 
-	// Selector should be trimmed to avoid leading spaces (#14773)
-	// Selector should include any valid non-HTML whitespace (#3003)
-	QUnit.test( "jQuery.fn.load( URL_SELECTOR with non-HTML whitespace(#3003) )", function( assert ) {
+	// Selector should be trimmed to avoid leading spaces (trac-14773)
+	// Selector should include any valid non-HTML whitespace (gh-3003)
+	QUnit.test( "jQuery.fn.load( URL_SELECTOR with non-HTML whitespace(gh-3003) )", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
 		jQuery( "#first" ).load( baseURL + "test3.html   #whitespace\\\\xA0 ", function() {
@@ -2797,7 +2827,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		).always( done );
 	} );
 
-	QUnit.test( "#2046 - jQuery.fn.load( String, Function ) with ajaxSetup on dataType json", function( assert ) {
+	QUnit.test( "trac-2046 - jQuery.fn.load( String, Function ) with ajaxSetup on dataType json", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
 
@@ -2812,7 +2842,7 @@ if ( typeof window.ArrayBuffer === "undefined" || typeof new XMLHttpRequest().re
 		jQuery( "#first" ).load( baseURL + "test3.html" );
 	} );
 
-	QUnit.test( "#10524 - jQuery.fn.load() - data specified in ajaxSettings is merged in", function( assert ) {
+	QUnit.test( "trac-10524 - jQuery.fn.load() - data specified in ajaxSettings is merged in", function( assert ) {
 		assert.expect( 1 );
 		var done = assert.async();
 
