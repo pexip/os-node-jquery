@@ -1,16 +1,20 @@
 Description: Skip gzip js
+Forwarded: not-needed
+Reviewed-By: Yadd <yadd@debian.org>
+Last-Update: 2022-08-29
+
 --- a/Gruntfile.js
 +++ b/Gruntfile.js
-@@ -13,7 +13,7 @@
+@@ -20,7 +20,7 @@
  	}
  
  	var fs = require( "fs" ),
 -		gzip = require( "gzip-js" ),
-+		gzip = require( "zlib" ),
- 		isTravis = process.env.TRAVIS,
- 		travisBrowsers = process.env.BROWSERS && process.env.BROWSERS.split( "," );
- 
-@@ -29,7 +29,7 @@
++		zlib = require( "zlib" ),
+ 		oldNode = /^v10\./.test( process.version ),
+ 		nodeV17OrNewer = !/^v1[0246]\./.test( process.version ),
+ 		isCi = process.env.GITHUB_ACTION,
+@@ -38,7 +38,7 @@
  			options: {
  				compress: {
  					gz: function( contents ) {

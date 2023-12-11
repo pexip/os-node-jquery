@@ -3,8 +3,8 @@ opts=\
 repacksuffix=+dfsg,\
 repack,compression=xz,\
 dversionmangle=auto,\
-filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/node-jquery-$1.tar.gz/ \
- https://github.com/jquery/jquery/tags .*/archive/v?([\d\.]+).tar.gz group
+filenamemangle=s/.*?(\d[\d\.-]*@ARCHIVE_EXT@)/node-jquery-$1/ \
+ https://github.com/jquery/jquery/tags .*/archive/.*/v?([\d\.]+).tar.gz group
 
 # It is not recommended use npmregistry. Please investigate more.
 # Take a look at https://wiki.debian.org/debian/watch/

@@ -1,0 +1,4 @@
+# False positive
+very-long-line-length-in-source-file *.md*
+very-long-line-length-in-source-file *types-jquery/JQuery.d.ts*
+very-long-line-length-in-source-file *types-jquery/misc.d.ts*

@@ -1,3 +1,35 @@
+node-jquery (3.6.1+dfsg+~3.5.14-1) unstable; urgency=medium
+
+  * Team upload
+  * Declare compliance with policy 4.6.1
+  * New upstream version 3.6.1+dfsg+~3.5.14
+  * Refresh patches
+  * Update lintian overrides
+
+ -- Yadd <yadd@debian.org>  Mon, 29 Aug 2022 10:27:59 +0200
+
+node-jquery (3.6.0+dfsg+~3.5.13-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream version 3.6.0+dfsg+~3.5.13
+  * Unfuzz patches
+  * Update copyright
+  * Update lintian overrides
+
+ -- Yadd <yadd@debian.org>  Mon, 21 Feb 2022 11:29:39 +0100
+
+node-jquery (3.5.1+dfsg+~3.5.5-8) unstable; urgency=medium
+
+  * Team upload.
+  * Update standards version to 4.6.0, no changes needed.
+  * Fix filenamemangle
+  * Fix GitHub tags regex
+  * Add build dependency to node-babel7
+  * Drop ie8 support (Closes: #997625)
+  * Add lintian overrides
+
+ -- Yadd <yadd@debian.org>  Sun, 24 Oct 2021 08:01:05 +0200
+
 node-jquery (3.5.1+dfsg+~3.5.5-7pexip1) pexip; urgency=medium
 
   * Prepare Pexip packaging

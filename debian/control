@@ -8,8 +8,9 @@ Testsuite: autopkgtest-pkg-nodejs
 Priority: optional
 Build-Depends: debhelper-compat (= 13)
  , brotli
- , grunt (>= 1.0.1-7)
+ , grunt
  , libjs-sizzle
+ , node-babel7
  , node-grunt-babel (>= 8.0~)
  , node-grunt-contrib-uglify (>= 3.0~)
  , node-load-grunt-tasks
@@ -18,7 +19,7 @@ Build-Depends: debhelper-compat (= 13)
  , node-uglify-js
  , pigz
  , dh-sequence-nodejs
-Standards-Version: 4.5.1
+Standards-Version: 4.6.1
 Vcs-Browser: https://salsa.debian.org/js-team/node-jquery
 Vcs-Git: https://salsa.debian.org/js-team/node-jquery.git
 Homepage: https://jquery.com/
