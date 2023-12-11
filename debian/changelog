@@ -1,3 +1,9 @@
+node-jquery (3.6.1+dfsg+~3.5.14-1pexip1) pexip-bookworm; urgency=medium
+
+  * New upstream release.
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Mon, 11 Dec 2023 15:23:55 +0000
+
 node-jquery (3.6.1+dfsg+~3.5.14-1) unstable; urgency=medium
 
   * Team upload
