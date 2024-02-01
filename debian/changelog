@@ -1,3 +1,9 @@
+node-jquery (3.6.1+dfsg+~3.5.14-1+pexip24u2) pexip-bookworm; urgency=medium
+
+  * New versioning scheme
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 01 Feb 2024 16:13:37 +0000
+
 node-jquery (3.6.1+dfsg+~3.5.14-1pexip1) pexip-bookworm; urgency=medium
 
   * New upstream release.
