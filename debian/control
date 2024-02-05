@@ -13,6 +13,7 @@ Build-Depends: debhelper-compat (= 13)
  , node-babel7
  , node-grunt-babel (>= 8.0~)
  , node-grunt-contrib-uglify (>= 3.0~)
+ , node-liftoff
  , node-load-grunt-tasks
  , node-requirejs
  , node-strip-json-comments

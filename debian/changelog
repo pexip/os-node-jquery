@@ -1,3 +1,9 @@
+node-jquery (3.6.1+dfsg+~3.5.14-1+pexip24u3) pexip-bookworm; urgency=medium
+
+  * Add missing build-dep
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Mon, 05 Feb 2024 09:29:50 +0000
+
 node-jquery (3.6.1+dfsg+~3.5.14-1+pexip24u2) pexip-bookworm; urgency=medium
 
   * New versioning scheme
