@@ -1,3 +1,9 @@
+node-jquery (3.6.1+dfsg+~3.5.14-1+pexip25u1) pexip-trixie; urgency=medium
+
+  * Initial trixie build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Tue, 29 Apr 2025 22:43:27 +0100
+
 node-jquery (3.6.1+dfsg+~3.5.14-1+pexip24u3) pexip-bookworm; urgency=medium
 
   * Add missing build-dep
